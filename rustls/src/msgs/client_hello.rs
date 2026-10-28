@@ -100,6 +100,8 @@ impl ClientHelloPayload {
             false
         }
     }
+
+    pub(crate) const TYPICAL_LEN: usize = 512;
 }
 
 impl Codec<'_> for ClientHelloPayload {

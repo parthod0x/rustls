@@ -729,6 +729,12 @@ impl<'a> CertificatePayloadTls13<'a> {
         }
     }
 
+    pub(crate) fn encoding(&self) -> Vec<u8> {
+        let mut encoding = Vec::with_capacity(Self::TYPICAL_LEN);
+        self.encode(&mut encoding);
+        encoding
+    }
+
     pub(super) fn into_owned(self) -> CertificatePayloadTls13<'static> {
         CertificatePayloadTls13 {
             context: self.context.into_owned(),
@@ -760,6 +766,8 @@ impl<'a> CertificatePayloadTls13<'a> {
                 .collect(),
         )
     }
+
+    pub(super) const TYPICAL_LEN: usize = 2048;
 }
 
 impl<'a> Codec<'a> for CertificatePayloadTls13<'a> {

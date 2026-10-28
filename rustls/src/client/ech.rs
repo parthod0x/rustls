@@ -458,9 +458,11 @@ impl EchState {
             Some(outer_hello_ext(self, enc.clone(), vec![0; payload_len]));
 
         // Next we compute the proper extension payload.
+        let mut plaintext = Vec::with_capacity(ClientHelloPayload::TYPICAL_LEN);
+        outer_hello.encode(&mut plaintext);
         let payload = self
             .sender
-            .seal(&outer_hello.get_encoding(), &encoded_inner_hello)?;
+            .seal(&plaintext, &encoded_inner_hello)?;
 
         // And then we replace the placeholder extension with the real one.
         outer_hello.encrypted_client_hello = Some(outer_hello_ext(self, enc, payload));

@@ -293,7 +293,7 @@ impl<'a> MessagePayload<'a> {
 
     pub(crate) fn handshake(parsed: HandshakeMessagePayload<'a>) -> Self {
         Self::Handshake {
-            encoded: Payload::new(parsed.get_encoding()),
+            encoded: Payload::new(parsed.encoding()),
             parsed,
         }
     }
@@ -475,8 +475,23 @@ impl<'a> HandshakeMessagePayload<'a> {
             })
     }
 
+    pub(crate) fn encoding(&self) -> Vec<u8> {
+        let len_estimate = match &self.0 {
+            HandshakePayload::Certificate(_) | HandshakePayload::CertificateTls13(_) => {
+                CertificatePayloadTls13::TYPICAL_LEN
+            }
+            HandshakePayload::MessageHash(h) => 4 + h.bytes().len(),
+            HandshakePayload::ClientHello(_) => ClientHelloPayload::TYPICAL_LEN,
+            _ => 256,
+        };
+
+        let mut encoding = Vec::with_capacity(len_estimate);
+        self.encode(&mut encoding);
+        encoding
+    }
+
     pub(crate) fn encoding_for_binder_signing(&self) -> Vec<u8> {
-        let mut ret = self.get_encoding();
+        let mut ret = self.encoding();
         let ret_len = ret
             .len()
             .saturating_sub(self.total_binder_length());

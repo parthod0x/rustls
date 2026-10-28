@@ -424,6 +424,7 @@ pub(crate) trait Codec<'a>: Sized {
 
     /// Convenience function for encoding the implementation
     /// into a vec and returning it
+    #[cfg(test)]
     fn get_encoding(&self) -> Vec<u8> {
         let mut bytes = Vec::new();
         self.encode(&mut bytes);

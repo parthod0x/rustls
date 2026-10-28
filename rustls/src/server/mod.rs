@@ -55,6 +55,15 @@ pub(crate) enum ServerSessionValue<'a> {
     Tls13(Tls13ServerSessionValue<'a>),
 }
 
+impl ServerSessionValue<'_> {
+    fn encoding(&self) -> Vec<u8> {
+        let mut encoding = Vec::with_capacity(128);
+        self.encode(&mut encoding);
+        encoding.shrink_to_fit(); // long-lived
+        encoding
+    }
+}
+
 impl<'a> Codec<'a> for ServerSessionValue<'a> {
     fn encode(&self, bytes: &mut Vec<u8>) {
         match self {
