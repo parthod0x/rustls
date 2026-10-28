@@ -741,6 +741,14 @@ impl PresharedKeyOffer {
             binders: vec![PresharedKeyBinder::from(binder)],
         }
     }
+
+    pub(crate) fn encoded_binders_len(&self) -> usize {
+        2 + self
+            .binders
+            .iter()
+            .map(|b| 1 + b.as_ref().len())
+            .sum::<usize>()
+    }
 }
 
 impl Codec<'_> for PresharedKeyOffer {
